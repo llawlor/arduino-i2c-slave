@@ -19,11 +19,6 @@ void setup() {
   // define callbacks for i2c communication
   Wire.onReceive(receiveCallback);
   Wire.onRequest(requestCallback);
-
-  // set the servo to digital pin 3
-  my_servo.attach(3);
-  
-  //Serial.println("Ready!");
 }
 
 // main loop of the program
@@ -35,6 +30,7 @@ void loop() {
 void receiveCallback() {
 
   // message string
+  // message format will appear like: pin:5,servo:60
   String message = "";
 
   // while there is another character to read
@@ -49,6 +45,11 @@ void receiveCallback() {
   //Serial.print("data received: ");
   //Serial.println(message);
 
+  // get the pin number
+  int pin_number = message.substring(message.indexOf("pin:") + 4, message.indexOf(",")).toInt();
+  // get the index of the servo command
+  int servo_message_position = message.indexOf("servo:");
+
   // if we received the "on" command
   if (message == "on") {
     // turn the onboard light on
@@ -58,10 +59,11 @@ void receiveCallback() {
     // turn the onboard light off
     digitalWrite(13, LOW);
   // if we received a servo command
-  } else if (message.startsWith("servo_")) {
+  } else if (servo_message_position >= 0) {
     // get the servo position
-    int position = message.substring(6).toInt();
-    //Serial.println("move servo");
+    int position = message.substring(servo_message_position + 6).toInt();
+    // set the servo to the correct pin
+    my_servo.attach(pin_number);
     // send the command to the servo
     my_servo.write(position);
    }
