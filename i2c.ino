@@ -23,7 +23,6 @@ void setup() {
 
 // main loop of the program
 void loop() {
-  delay(10);
 }
 
 // callback for receiving data
