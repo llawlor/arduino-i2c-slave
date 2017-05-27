@@ -4,8 +4,9 @@
 // byte address for the i2c communication
 #define SLAVE_ADDRESS 0x04
 
-// define a servo
-Servo my_servo;
+// define an array of 48 servos
+// when referencing servos by pin number, use [pin_number - 1] since array index starts at 0 and pin numbering starts at 1
+Servo my_servos[48];
 
 // initialize
 void setup() {
@@ -62,10 +63,10 @@ void receiveCallback() {
     // get the servo position
     int position = message.substring(servo_message_position + 6).toInt();
     // set the servo to the correct pin
-    my_servo.attach(pin_number);
+    my_servos[pin_number - 1].attach(pin_number);
     // send the command to the servo
-    my_servo.write(position);
-   }
+    my_servos[pin_number - 1].write(position);
+  }
 }
 
 // callback for requests
