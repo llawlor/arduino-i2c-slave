@@ -11,7 +11,7 @@ Servo my_servos[48];
 // initialize
 void setup() {
   // set the baud rate and start the serial monitor
-  Serial.begin(9600);
+  //Serial.begin(9600);
   // initialize i2c as slave
   Wire.begin(SLAVE_ADDRESS);
   
