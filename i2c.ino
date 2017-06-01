@@ -10,10 +10,8 @@ Servo my_servos[48];
 
 // initialize
 void setup() {
-  // set onboard LED light (pin 13) to output mode
-  pinMode(13, OUTPUT);
   // set the baud rate and start the serial monitor
-  //Serial.begin(9600);
+  Serial.begin(9600);
   // initialize i2c as slave
   Wire.begin(SLAVE_ADDRESS);
   
@@ -47,25 +45,36 @@ void receiveCallback() {
 
   // get the pin number
   int pin_number = message.substring(message.indexOf("pin:") + 4, message.indexOf(",")).toInt();
+  // get the index of the digital command
+  int digital_message_position = message.indexOf("digital:");
   // get the index of the servo command
   int servo_message_position = message.indexOf("servo:");
 
-  // if we received the "on" command
-  if (message == "on") {
-    // turn the onboard light on
-    digitalWrite(13, HIGH);
-  // else if we received the "off" command
-  } else if (message == "off") {
-    // turn the onboard light off
-    digitalWrite(13, LOW);
+  // if we received a digital command
+  if (digital_message_position >= 0) {
+    // get the digital command
+    String command = message.substring(digital_message_position + 8);
+    // set pin to output mode
+    pinMode(pin_number, OUTPUT);
+    
+    // if the message is "on", write "HIGH"
+    if (command == "on") {
+      digitalWrite(pin_number, HIGH);
+    // if the message is "off", write "LOW"
+    } else if (command == "off") {
+      digitalWrite(pin_number, LOW);
+    }
+    
   // if we received a servo command
   } else if (servo_message_position >= 0) {
     // get the servo position
     int position = message.substring(servo_message_position + 6).toInt();
+    
     // set the servo to the correct pin
     my_servos[pin_number - 1].attach(pin_number);
     // send the command to the servo
     my_servos[pin_number - 1].write(position);
+    
   }
 }
 
